@@ -63,9 +63,9 @@ public class SerialPortThread extends Thread {
                         dataListener.onReceiveData(path, buffer);
                     }
                 } else {
-                    Thread.sleep(50);
+                    //Thread.sleep(50);
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
