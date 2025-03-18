@@ -63,7 +63,7 @@ public class SerialPortThread extends Thread {
                         dataListener.onReceiveData(path, buffer);
                     }
                 } else {
-                    //Thread.sleep(50);
+                    Thread.sleep(50);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
