@@ -17,6 +17,8 @@ class AndroidSerialPort {
   ///串口数据流
   Stream<Uint8List>? get dataStream => _dataStreamController?.stream;
 
+  StreamSubscription? _dataStreamSubscription;
+
   ///串口路径
   final String portPath;
 
@@ -26,23 +28,23 @@ class AndroidSerialPort {
   AndroidSerialPort(this.portPath) {
     if (Platform.isAndroid) {
       _dataStreamController = StreamController.broadcast();
-      _streamChannel.receiveBroadcastStream().cast<Map?>().listen((data) {
-        String portPath = data?['portPath'];
-        if (portPath == this.portPath) {
-          _dataStreamController?.add(data?['data']);
-        }
-      });
+      _dataStreamSubscription =
+          _streamChannel.receiveBroadcastStream().cast<Map?>().listen((data) {
+            String portPath = data?['portPath'];
+            if (portPath == this.portPath) {
+              _dataStreamController?.add(data?['data']);
+            }
+          });
     }
   }
 
   ///打开串口
-  Future<bool> open(
-      {int baudRate = 9600,
-      int dataBits = 8,
-      int stopBits = 1,
-      int flowControl = 0,
-      int parity = 0,
-      int flag = 0}) async {
+  Future<bool> open({int baudRate = 9600,
+    int dataBits = 8,
+    int stopBits = 1,
+    int flowControl = 0,
+    int parity = 0,
+    int flag = 0}) async {
     if (Platform.isAndroid) {
       try {
         await _channel.invokeMethod('open', {
@@ -70,11 +72,20 @@ class AndroidSerialPort {
     }
   }
 
+  Future<void> dispose() async {
+    if (Platform.isAndroid) {
+      await _channel.invokeMethod('close', {'portPath': portPath});
+      _dataStreamSubscription?.cancel();
+      _dataStreamSubscription = null;
+      _dataStreamController?.close();
+    }
+  }
+
   ///写入数据
   Future<bool> write(Uint8List data) async {
     if (Platform.isAndroid) {
       return await _channel.invokeMethod<bool>(
-              'write', {'portPath': portPath, 'data': data}) ??
+          'write', {'portPath': portPath, 'data': data}) ??
           false;
     }
     return false;
@@ -92,8 +103,8 @@ class AndroidSerialPort {
     if (Platform.isAndroid) {
       if (_serialPortList == null) {
         _serialPortList = (await _channel.invokeMethod<List>('serialPortList'))
-                ?.map((e) => e.toString())
-                .toList() ??
+            ?.map((e) => e.toString())
+            .toList() ??
             [];
       }
       return _serialPortList!;
