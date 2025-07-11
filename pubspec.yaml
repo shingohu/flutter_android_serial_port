@@ -1,5 +1,5 @@
 name: android_serial_port
-description: "android 串口库包装"
+description: "android serial port"
 version: 0.0.1
 homepage:
 
