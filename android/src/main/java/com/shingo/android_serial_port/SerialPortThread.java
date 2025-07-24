@@ -12,6 +12,7 @@ import java.util.Map;
 public class SerialPortThread extends Thread {
 
     private SerialPort serialPort;
+    private int waitMs = 0;
 
     private SerialPortDataListener dataListener;
     private boolean isClose = true;
@@ -28,9 +29,10 @@ public class SerialPortThread extends Thread {
         this.dataListener = dataListener;
     }
 
-    public void open(String path, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags) throws IOException {
+    public void open(String path, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags,int waitMs) throws IOException {
         serialPort = new SerialPort(new File(path), baudrate, stopBits, dataBits, parity, flowCon, flags);
         isClose = false;
+        this.waitMs = waitMs;
         start();
     }
 
@@ -63,8 +65,11 @@ public class SerialPortThread extends Thread {
                         dataListener.onReceiveData(path, buffer);
                     }
                 } else {
-                    // Thread.sleep(50);
+                    if(waitMs>0) {
+                        Thread.sleep(waitMs);
+                    }
                 }
+                System.out.println(11111);
             } catch (Exception e) {
                 // e.printStackTrace();
             }

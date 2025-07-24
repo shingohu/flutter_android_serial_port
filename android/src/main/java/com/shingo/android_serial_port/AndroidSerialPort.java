@@ -28,13 +28,13 @@ public class AndroidSerialPort extends Thread {
         }
     }
 
-    public boolean open(SerialPortDataListener listener, String portPath, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags) {
+    public boolean open(SerialPortDataListener listener, String portPath, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags, int waitMs) {
         if (_serialPortMap.containsKey(portPath)) {
             return true;
         }
         SerialPortThread serialPort = new SerialPortThread(listener);
         try {
-            serialPort.open(portPath, baudrate, stopBits, dataBits, parity, flowCon, flags);
+            serialPort.open(portPath, baudrate, stopBits, dataBits, parity, flowCon, flags, waitMs);
             _serialPortMap.put(portPath, serialPort);
             return true;
         } catch (IOException e) {

@@ -45,10 +45,15 @@ class _MyAppState extends State<MyApp> {
             ),
             TextButton(
               onPressed: () async {
-                AndroidSerialPort port = AndroidSerialPort("dev/ttyS3");
-                bool success = await port.open();
+                AndroidSerialPort port1 = AndroidSerialPort("dev/ttySE0");
+                AndroidSerialPort port2 = AndroidSerialPort("dev/ttyS2");
+                bool success = await port1.open(waitMs: 5);
+                bool success1 = await port2.open(waitMs: 5);
                 if (success) {
-                  print("串口打开成功");
+                  print("AT串口打开成功");
+                }
+                if (success1) {
+                  print("PCM串口打开成功");
                 }
               },
               child: Text(

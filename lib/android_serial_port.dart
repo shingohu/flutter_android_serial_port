@@ -6,8 +6,7 @@ import 'package:flutter/services.dart';
 _AndroidSerialPortStream _stream = _AndroidSerialPortStream._();
 
 class _AndroidSerialPortStream {
-  static EventChannel get _streamChannel =>
-      const EventChannel('android_serial_port.stream');
+  static EventChannel get _streamChannel => const EventChannel('android_serial_port.stream');
 
   _AndroidSerialPortStream._() {
     _streamChannel.receiveBroadcastStream().cast<Map?>().listen((data) {
@@ -32,13 +31,11 @@ class _AndroidSerialPortStream {
 
 ///only support android
 class AndroidSerialPort {
-  static MethodChannel get _channel =>
-      const MethodChannel('android_serial_port');
+  static MethodChannel get _channel => const MethodChannel('android_serial_port');
 
   static List<String>? _serialPortList;
 
-  StreamController<Uint8List> _dataStreamController =
-      StreamController.broadcast();
+  StreamController<Uint8List> _dataStreamController = StreamController.broadcast();
 
   ///串口数据流
   Stream<Uint8List>? get dataStream => _dataStreamController?.stream;
@@ -70,6 +67,8 @@ class AndroidSerialPort {
       int stopBits = 1,
       int flowControl = 0,
       int parity = 0,
+      //没有数据时等待时间
+      int waitMs = 0,
       int flag = 0}) async {
     if (Platform.isAndroid) {
       try {
@@ -79,6 +78,7 @@ class AndroidSerialPort {
           'dataBits': dataBits,
           'stopBits': stopBits,
           'parity': parity,
+          'waitMs': waitMs,
           'flowControl': flowControl,
           'flags': flag
         });
@@ -111,9 +111,7 @@ class AndroidSerialPort {
   ///写入数据
   Future<bool> write(Uint8List data) async {
     if (Platform.isAndroid) {
-      return await _channel.invokeMethod<bool>(
-              'write', {'portPath': portPath, 'data': data}) ??
-          false;
+      return await _channel.invokeMethod<bool>('write', {'portPath': portPath, 'data': data}) ?? false;
     }
     return false;
   }
@@ -129,10 +127,8 @@ class AndroidSerialPort {
   static Future<List<String>> serialPortList() async {
     if (Platform.isAndroid) {
       if (_serialPortList == null) {
-        _serialPortList = (await _channel.invokeMethod<List>('serialPortList'))
-                ?.map((e) => e.toString())
-                .toList() ??
-            [];
+        _serialPortList =
+            (await _channel.invokeMethod<List>('serialPortList'))?.map((e) => e.toString()).toList() ?? [];
       }
       return _serialPortList!;
     }

@@ -48,7 +48,8 @@ public class AndroidSerialPortPlugin implements FlutterPlugin, MethodCallHandler
             int parity = call.argument("parity");
             int flowControl = call.argument("flowControl");
             int flags = call.argument("flags");
-            boolean success = androidSerialPort.open(this, portPath, baudRate, stopBits, dataBits, parity, flowControl, flags);
+            int waitMs = call.argument("waitMs");
+            boolean success = androidSerialPort.open(this, portPath, baudRate, stopBits, dataBits, parity, flowControl, flags,waitMs);
             if (success) {
                 result.success(true);
             } else {
