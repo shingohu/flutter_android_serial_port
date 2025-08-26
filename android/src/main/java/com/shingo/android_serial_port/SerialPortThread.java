@@ -69,7 +69,6 @@ public class SerialPortThread extends Thread {
                         Thread.sleep(waitMs);
                     }
                 }
-                System.out.println(11111);
             } catch (Exception e) {
                 // e.printStackTrace();
             }
