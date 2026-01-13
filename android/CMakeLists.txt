@@ -44,3 +44,8 @@ target_link_libraries( # Specifies the target library.
         # included in the NDK.
         ${log-lib}
         )
+
+if (ANDROID)
+        # Support Android 15 16k page size
+        target_link_options(webrtc_ns PRIVATE "-Wl,-z,max-page-size=16384")
+endif ()
