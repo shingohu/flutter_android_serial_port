@@ -1,5 +1,6 @@
 package com.shingo.android_serial_port;
 
+import android.serialport.SerialPort;
 import android.serialport.SerialPortFinder;
 
 import java.io.IOException;
@@ -26,6 +27,28 @@ public class AndroidSerialPort extends Thread {
             _serialPortMap.get(portPath).close();
             _serialPortMap.remove(portPath);
         }
+    }
+
+    public void closeByFd(int fd) {
+        SerialPort.closeByFd(fd);
+        String portPath = null;
+        for (String key : _serialPortMap.keySet()) {
+            SerialPortThread value = _serialPortMap.get(key);
+            if (value != null && value.getFd() == fd) {
+                portPath = key;
+                break;
+            }
+        }
+        if (portPath != null) {
+            close(portPath);
+        }
+    }
+
+    public int getFd(String portPath) {
+        if (_serialPortMap.containsKey(portPath)) {
+            return _serialPortMap.get(portPath).getFd();
+        }
+        return -1;
     }
 
     public boolean open(SerialPortDataListener listener, String portPath, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags, int waitMs) {

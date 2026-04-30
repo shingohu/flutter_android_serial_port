@@ -110,7 +110,6 @@ JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
 	/* Configure device */
 	{
 		struct termios cfg;
-		LOGD("Configuring serial port");
 		if (tcgetattr(fd, &cfg)) {
 			LOGE("tcgetattr() failed");
 			close(fd);
@@ -226,3 +225,34 @@ JNIEXPORT void JNICALL Java_android_serialport_SerialPort_close
 	LOGD("close(fd = %d)", descriptor);
 	close(descriptor);
 }
+
+/*
+ * Class:     cedric_serial_SerialPort
+ * Method:    fd
+ * Signature: ()V
+ */
+JNIEXPORT jint JNICALL Java_android_serialport_SerialPort_fd
+(JNIEnv *env, jobject thiz) {
+        jclass SerialPortClass = (*env)->GetObjectClass(env, thiz);
+        jclass FileDescriptorClass = (*env)->FindClass(env, "java/io/FileDescriptor");
+
+        jfieldID mFdID = (*env)->GetFieldID(env, SerialPortClass, "mFd", "Ljava/io/FileDescriptor;");
+        jfieldID descriptorID = (*env)->GetFieldID(env, FileDescriptorClass, "descriptor", "I");
+
+        jobject mFd = (*env)->GetObjectField(env, thiz, mFdID);
+        jint descriptor = (*env)->GetIntField(env, mFd, descriptorID);
+
+        return descriptor;
+
+}
+/*
+ * Class:     android_serialport_SerialPort
+ * Method:    closeByFd
+ * Signature: ()V
+ */
+JNIEXPORT jint JNICALL Java_android_serialport_SerialPort_closeByFd
+        (JNIEnv *env, jclass thiz, jint fd){
+    LOGD("closeBy(fd = %d)", fd);
+    close(fd);
+}
+

@@ -25,11 +25,18 @@ public class SerialPortThread extends Thread {
         }
     }
 
+    public int getFd() {
+        if (serialPort != null) {
+            return serialPort.getFd();
+        }
+        return -1;
+    }
+
     public SerialPortThread(SerialPortDataListener dataListener) {
         this.dataListener = dataListener;
     }
 
-    public void open(String path, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags,int waitMs) throws IOException {
+    public void open(String path, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags, int waitMs) throws IOException {
         serialPort = new SerialPort(new File(path), baudrate, stopBits, dataBits, parity, flowCon, flags);
         isClose = false;
         this.waitMs = waitMs;
@@ -65,7 +72,7 @@ public class SerialPortThread extends Thread {
                         dataListener.onReceiveData(path, buffer);
                     }
                 } else {
-                    if(waitMs>0) {
+                    if (waitMs > 0) {
                         Thread.sleep(waitMs);
                     }
                 }

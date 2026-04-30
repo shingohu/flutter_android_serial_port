@@ -45,6 +45,9 @@ class AndroidSerialPort {
   ///串口路径
   final String portPath;
 
+  int get fd => _fd;
+  int _fd = -1;
+
   bool get isOpen => _isOpen;
   bool _isOpen = false;
 
@@ -61,15 +64,14 @@ class AndroidSerialPort {
   }
 
   ///打开串口
-  Future<bool> open(
-      {int baudRate = 9600,
-      int dataBits = 8,
-      int stopBits = 1,
-      int flowControl = 0,
-      int parity = 0,
-      //没有数据时等待时间
-      int waitMs = 0,
-      int flag = 0}) async {
+  Future<bool> open({int baudRate = 9600,
+    int dataBits = 8,
+    int stopBits = 1,
+    int flowControl = 0,
+    int parity = 0,
+    //没有数据时等待时间
+    int waitMs = 0,
+    int flag = 0}) async {
     if (Platform.isAndroid) {
       try {
         await _channel.invokeMethod('open', {
@@ -83,9 +85,13 @@ class AndroidSerialPort {
           'flags': flag
         });
         _isOpen = true;
+        _fd = await _channel.invokeMethod("getFd", {
+          "portPath": portPath
+        });
       } on PlatformException catch (e) {
         print(e.message);
         _isOpen = false;
+        _fd = -1;
       }
     }
     return _isOpen;
@@ -94,6 +100,7 @@ class AndroidSerialPort {
   ///关闭串口
   Future<void> close() async {
     if (Platform.isAndroid) {
+      _fd = -1;
       return await _channel.invokeMethod('close', {'portPath': portPath});
     }
   }
@@ -104,6 +111,7 @@ class AndroidSerialPort {
       _dataStreamSubscription?.cancel();
       _dataStreamSubscription = null;
       _dataStreamController.close();
+      _fd = -1;
       _stream.removeCallback(_dataCallback);
     }
   }
@@ -120,6 +128,15 @@ class AndroidSerialPort {
   static Future<void> hotRestart() async {
     if (Platform.isAndroid) {
       return await _channel.invokeMethod('hotRestart');
+    }
+  }
+
+  ///通过FD关闭串口
+  static Future<void> closeByFd(int fd) async {
+    if (Platform.isAndroid) {
+      return await _channel.invokeMethod("closeByFd", {
+        "fd": fd
+      });
     }
   }
 

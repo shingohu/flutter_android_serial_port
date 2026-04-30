@@ -16,8 +16,6 @@
 
 package android.serialport;
 
-import android.util.Log;
-
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -282,7 +280,19 @@ public class SerialPort {
      */
     private native static FileDescriptor open(String path, int baudrate, int stopBits, int dataBits, int parity, int flowCon, int flags); //打开串口
 
-    public native void close();
+    private native void close();
+
+    private native int fd();
+
+    public native static void closeByFd(int fd);
+
+    public int getFd() {
+        if (mFd != null) {
+            return fd();
+        }
+        return -1;
+    }
+
 
     public void tryClose() {
         if (mFileInputStream != null) {

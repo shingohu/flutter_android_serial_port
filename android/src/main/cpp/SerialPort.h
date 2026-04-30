@@ -23,6 +23,23 @@ JNIEXPORT jobject JNICALL Java_android_serialport_SerialPort_open
 JNIEXPORT void JNICALL Java_android_serialport_SerialPort_close
         (JNIEnv *, jobject);
 
+
+/*
+ * Class:     android_serialport_SerialPort
+ * Method:    fd
+ * Signature: ()V
+ */
+JNIEXPORT jint JNICALL Java_android_serialport_SerialPort_fd
+        (JNIEnv *, jobject);
+
+/*
+ * Class:     android_serialport_SerialPort
+ * Method:    closeByFd
+ * Signature: ()V
+ */
+JNIEXPORT jint JNICALL Java_android_serialport_SerialPort_closeByFd
+        (JNIEnv *, jclass,jint);
+
 #ifdef __cplusplus
 }
 #endif

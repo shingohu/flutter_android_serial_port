@@ -49,7 +49,7 @@ public class AndroidSerialPortPlugin implements FlutterPlugin, MethodCallHandler
             int flowControl = call.argument("flowControl");
             int flags = call.argument("flags");
             int waitMs = call.argument("waitMs");
-            boolean success = androidSerialPort.open(this, portPath, baudRate, stopBits, dataBits, parity, flowControl, flags,waitMs);
+            boolean success = androidSerialPort.open(this, portPath, baudRate, stopBits, dataBits, parity, flowControl, flags, waitMs);
             if (success) {
                 result.success(true);
             } else {
@@ -58,6 +58,13 @@ public class AndroidSerialPortPlugin implements FlutterPlugin, MethodCallHandler
         } else if ("close".equals(method)) {
             String portPath = call.argument("portPath");
             androidSerialPort.close(portPath);
+            result.success(true);
+        } else if ("getFd".equals(method)) {
+            String portPath = call.argument("portPath");
+            result.success(androidSerialPort.getFd(portPath));
+        } else if ("closeByFd".equals(method)) {
+            int fd = call.argument("fd");
+            androidSerialPort.closeByFd(fd);
             result.success(true);
         } else if ("hotRestart".equals(method)) {
             closeAll();
